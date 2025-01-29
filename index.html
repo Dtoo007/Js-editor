@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Editor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        textarea {
+            width: 90%;
+            height: 300px;
+            margin: 10px 0;
+            font-family: monospace;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        .load-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        .submit-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: left;
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>JavaScript Editor</h1>
+
+    <input type="text" id="loadUrl" placeholder="Enter URL to load JS from" />
+    <button class="load-btn" onclick="loadCode()">Load JavaScript</button>
+
+    <textarea id="editor" placeholder="JavaScript code will appear here..."></textarea>
+
+    <input type="text" id="postUrl" placeholder="Enter URL to submit JS to" />
+    <button class="submit-btn" onclick="submitCode()">Submit JavaScript</button>
+
+    <div class="response">
+        <h3>Response:</h3>
+        <pre id="responseBox">No response yet...</pre>
+    </div>
+
+    <script>
+        async function loadCode() {
+            const url = document.getElementById('loadUrl').value;
+            if (!url) {
+                alert("Please enter a valid URL to fetch JavaScript from.");
+                return;
+            }
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Failed to fetch JavaScript.");
+                const code = await response.text();
+                document.getElementById('editor').value = code;
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        }
+
+        async function submitCode() {
+            const url = document.getElementById('postUrl').value;
+            const code = document.getElementById('editor').value;
+            console.log(code);
+
+            if (!url) {
+                alert("Please enter a valid URL to submit JavaScript.");
+                return;
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ code })
+                });
+                const result = await response.json();
+                document.getElementById('responseBox').textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById('responseBox').textContent = "Error: " + error.message;
+            }
+        }
+    </script>
+
+</body>
+</html>
