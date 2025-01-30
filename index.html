@@ -1,119 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JavaScript Editor</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs/editor/editor.main.min.css"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f5f5f5;
-            text-align: center;
+      /* Modern UI Styles */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #1e1e1e;
+        color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+      }
+      .header {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 20px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #252526;
+        z-index: 1000;
+      }
+
+      .logo {
+        width: 150px;
+      }
+
+      h1 {
+        color: #ffffff;
+        margin: 20px 0;
+        font-size: 2rem;
+        text-align: center;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 1200px;
+        background-color: #252526;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        margin-top: 100px;
+      }
+
+      input {
+        width: calc(100% - 40px);
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #444;
+        border-radius: 5px;
+        background-color: #333;
+        color: #ffffff;
+        font-size: 1rem;
+      }
+
+      input::placeholder {
+        color: #888;
+      }
+
+      button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        margin: 10px 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      .submit-btn {
+        background-color: #28a745;
+      }
+
+      .submit-btn:hover {
+        background-color: #218838;
+      }
+
+      .response {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #333;
+        border: 1px solid #444;
+        border-radius: 5px;
+        color: #ffffff;
+        font-family: monospace;
+        white-space: pre-wrap;
+        overflow-x: auto;
+      }
+
+      /* Monaco Editor Container */
+      #editorContainer {
+        width: 100%;
+        height: 400px;
+        margin: 20px 0;
+        border: 1px solid #444;
+        border-radius: 5px;
+        overflow: hidden;
+      }
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .modal-content {
+        background-color: #252526;
+        padding: 20px;
+        border-radius: 10px;
+        width: 300px;
+        text-align: center;
+        position: relative;
+        color: #ffffff;
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        font-size: 20px;
+        color: #888;
+      }
+
+      .modal-close:hover {
+        color: #ffffff;
+      }
+      /* Loading Spinner Container */
+      .loading-container {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        justify-content: center;
+        align-items: center;
+        z-index: 1001;
+      }
+
+      /* Loading Spinner */
+      .loading-container {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        justify-content: center;
+        align-items: center;
+        z-index: 1001;
+      }
+
+      .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
         }
-        h1 {
-            color: #333;
+        100% {
+          transform: rotate(360deg);
         }
-        textarea {
-            width: 90%;
-            height: 300px;
-            margin: 10px 0;
-            font-family: monospace;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            margin: 10px;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            border-radius: 5px;
-        }
-        .load-btn {
-            background-color: #007bff;
-            color: white;
-        }
-        .submit-btn {
-            background-color: #28a745;
-            color: white;
-        }
-        .response {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            text-align: left;
-            width: 90%;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        input {
-            width: 80%;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
+    <div class="header">
+      <img
+      src="https://cdn.prod.website-files.com/639261747ff7a0904e01dd40/664f7e6b87099ab225b2f611_indexing-company-logo-condensed-white.svg"
+      alt="Indexing.co Logo"
+      class="logo"
+      />
+    </div>
+    
+    <div class="container">
+      <h1>JavaScript Editor</h1>
+      <input type="text" id="loadUrl" placeholder="Enter URL to load JS from" />
+      <button class="load-btn" onclick="loadCode()">Load JavaScript</button>
 
-    <h1>JavaScript Editor</h1>
+      <div id="editorContainer"></div>
 
-    <input type="text" id="loadUrl" placeholder="Enter URL to load JS from" />
-    <button class="load-btn" onclick="loadCode()">Load JavaScript</button>
+      <input type="text" id="postUrl" placeholder="Enter URL to submit JS to" />
+      <button class="submit-btn" onclick="submitCode()">
+        Submit JavaScript
+      </button>
 
-    <textarea id="editor" placeholder="JavaScript code will appear here..."></textarea>
-
-    <input type="text" id="postUrl" placeholder="Enter URL to submit JS to" />
-    <button class="submit-btn" onclick="submitCode()">Submit JavaScript</button>
-
-    <div class="response">
+      <div class="response">
         <h3>Response:</h3>
         <pre id="responseBox">No response yet...</pre>
+      </div>
     </div>
 
+    <!-- Modal for Alerts -->
+    <div class="modal" id="alertModal">
+      <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <p id="modalMessage"></p>
+      </div>
+    </div>
+
+    <!-- Loading Spinner Container -->
+    <div class="loading-container" id="loadingContainer">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs/loader.js"></script>
     <script>
-        async function loadCode() {
-            const url = document.getElementById('loadUrl').value;
-            if (!url) {
-                alert("Please enter a valid URL to fetch JavaScript from.");
-                return;
-            }
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error("Failed to fetch JavaScript.");
-                const code = await response.text();
-                document.getElementById('editor').value = code;
-            } catch (error) {
-                alert("Error: " + error.message);
-            }
+      // Initialize Monaco Editor
+      require.config({
+        paths: {
+          vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs",
+        },
+      });
+      require(["vs/editor/editor.main"], function () {
+        window.editor = monaco.editor.create(
+          document.getElementById("editorContainer"),
+          {
+            value: "// JavaScript code will appear here...\n",
+            language: "javascript",
+            theme: "vs-dark",
+            automaticLayout: true,
+            fontSize: 14,
+            minimap: { enabled: false },
+            wordWrap: "on",
+          }
+        );
+      });
+
+      //this is the function to show the modal with a message
+      function showModal(message) {
+        document.getElementById("modalMessage").textContent = message;
+        document.getElementById("alertModal").style.display = "flex";
+      }
+
+      // the function to close the modal
+      function closeModal() {
+        document.getElementById("alertModal").style.display = "none";
+      }
+
+      // the function to show the loading spinner
+      function showLoading() {
+        document.getElementById("loadingSpinner").style.display = "block";
+      }
+
+
+
+
+
+
+      // the function to hide the loading spinner
+      function hideLoading() {
+        document.getElementById("loadingContainer").style.display = "none";
+      }
+
+      async function loadCode() {
+        const url = document.getElementById("loadUrl").value;
+        if (!url) {
+          showModal("Please enter a valid URL to fetch JavaScript from.");
+          return;
+        }
+        showLoading();
+        try {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error("Failed to fetch JavaScript.");
+          const code = await response.text();
+          window.editor.setValue(code);
+        } catch (error) {
+          showModal("Error: " + error.message);
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function submitCode() {
+        const url = document.getElementById("postUrl").value;
+        const code = window.editor.getValue();
+
+        if (!url) {
+          showModal("Please enter a valid URL to submit JavaScript.");
+          return;
         }
 
-        async function submitCode() {
-            const url = document.getElementById('postUrl').value;
-            const code = document.getElementById('editor').value;
-            console.log(code);
-
-            if (!url) {
-                alert("Please enter a valid URL to submit JavaScript.");
-                return;
-            }
-
-            try {
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ code })
-                });
-                const result = await response.json();
-                document.getElementById('responseBox').textContent = JSON.stringify(result, null, 2);
-            } catch (error) {
-                document.getElementById('responseBox').textContent = "Error: " + error.message;
-            }
+        let formattedCode;
+        try {
+          // try parsing it as JSON
+          formattedCode = JSON.parse(code);
+        } catch (error) {
+          // if it fails, assume it's regular JavaScript
+          formattedCode = code;
         }
+
+        showLoading();
+        try {
+          const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(...formattedCode ),
+          });
+          const result = await response.json();
+          document.getElementById("responseBox").textContent = JSON.stringify(
+            result,
+            null,
+            2
+          );
+        } catch (error) {
+          document.getElementById("responseBox").textContent =
+            "Error: " + error.message;
+        } finally {
+          hideLoading();
+        }
+      }
     </script>
-
-</body>
+  </body>
 </html>
